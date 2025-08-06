@@ -20,6 +20,7 @@ interface Company {
 
 interface CompanyCardProps {
   company: Company;
+  showDetailedScores?: boolean;
 }
 
 function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md' }) {
@@ -33,36 +34,36 @@ function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md
             <StarIcon className={`${sizeClass} text-yellow-400`} />
           ) : star === Math.ceil(rating) && rating % 1 !== 0 ? (
             <div className="relative">
-              <StarOutlineIcon className={`${sizeClass} text-gray-300`} />
+              <StarOutlineIcon className={`${sizeClass} text-gray-500`} />
               <StarIcon 
                 className={`${sizeClass} text-yellow-400 absolute top-0 left-0`} 
                 style={{ clipPath: `inset(0 ${100 - (rating % 1) * 100}% 0 0)` }}
               />
             </div>
           ) : (
-            <StarOutlineIcon className={`${sizeClass} text-gray-300`} />
+            <StarOutlineIcon className={`${sizeClass} text-gray-500`} />
           )}
         </div>
       ))}
-      <span className="ml-2 text-sm text-gray-600">{rating.toFixed(1)}</span>
+      <span className="ml-2 text-sm text-gray-300">{rating.toFixed(1)}</span>
     </div>
   );
 }
 
-export default function CompanyCard({ company }: CompanyCardProps) {
+export default function CompanyCard({ company, showDetailedScores = false }: CompanyCardProps) {
   const typeLabel = company.type === 'job_board' ? 'Job Board' : 'Traffic Buyer';
-  const typeColor = company.type === 'job_board' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+  const typeColor = company.type === 'job_board' ? 'bg-blue-900 text-blue-200' : 'bg-green-900 text-green-200';
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+    <div className="bg-slate-700 rounded-lg shadow-sm border border-slate-600 hover:shadow-md transition-shadow">
       <div className="p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-lg font-semibold text-gray-900">{company.name}</h3>
+              <h3 className="text-lg font-semibold text-white">{company.name}</h3>
               {company.verified && (
-                <CheckBadgeIcon className="h-5 w-5 text-blue-500" title="Verified Company" />
+                <CheckBadgeIcon className="h-5 w-5 text-blue-400" title="Verified Company" />
               )}
             </div>
             <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${typeColor}`}>
@@ -72,35 +73,51 @@ export default function CompanyCard({ company }: CompanyCardProps) {
         </div>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{company.description}</p>
+        <p className="text-gray-300 text-sm mb-4 line-clamp-2">{company.description}</p>
 
         {/* Rating */}
         <div className="mb-4">
           <StarRating rating={company.averageRating} />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             Based on {company.totalReviews} review{company.totalReviews !== 1 ? 's' : ''}
           </p>
         </div>
 
-        {/* Rating Categories */}
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-600">Payment Reliability</span>
-            <span className="font-medium">{company.paymentReliability.toFixed(1)}</span>
+        {/* Rating Categories - Only show if authorized */}
+        {showDetailedScores ? (
+          <div className="space-y-2 mb-4 bg-slate-600 p-3 rounded-lg">
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-300">Payment Reliability</span>
+              <span className="font-medium text-black bg-white px-2 py-1 rounded">
+                {company.paymentReliability.toFixed(1)}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-300">Communication</span>
+              <span className="font-medium text-black bg-white px-2 py-1 rounded">
+                {company.communicationQuality.toFixed(1)}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-300">Volume Accuracy</span>
+              <span className="font-medium text-black bg-white px-2 py-1 rounded">
+                {company.volumeAccuracy.toFixed(1)}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-300">Complaint Handling</span>
+              <span className="font-medium text-black bg-white px-2 py-1 rounded">
+                {company.complaintHandling.toFixed(1)}
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-600">Communication</span>
-            <span className="font-medium">{company.communicationQuality.toFixed(1)}</span>
+        ) : (
+          <div className="mb-4 p-3 bg-slate-600 rounded-lg">
+            <p className="text-xs text-gray-400 text-center">
+              🔒 Detailed scores available for verified users
+            </p>
           </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-600">Volume Accuracy</span>
-            <span className="font-medium">{company.volumeAccuracy.toFixed(1)}</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-600">Complaint Handling</span>
-            <span className="font-medium">{company.complaintHandling.toFixed(1)}</span>
-          </div>
-        </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-2">
@@ -112,14 +129,14 @@ export default function CompanyCard({ company }: CompanyCardProps) {
           </Link>
           <Link
             href={`/feedback/submit?company=${company.id}`}
-            className="flex-1 bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+            className="flex-1 bg-slate-600 text-gray-200 text-center py-2 px-4 rounded-lg hover:bg-slate-500 transition-colors text-sm font-medium"
           >
             Add Review
           </Link>
         </div>
 
         {/* Last Review Date */}
-        <p className="text-xs text-gray-400 mt-3 text-center">
+        <p className="text-xs text-gray-500 mt-3 text-center">
           Last reviewed: {new Date(company.lastReviewDate).toLocaleDateString()}
         </p>
       </div>

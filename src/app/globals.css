@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 30, 41, 59;
+  --background-end-rgb: 15, 23, 42;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: 30, 41, 59;
+    --background-end-rgb: 15, 23, 42;
   }
 }
 
@@ -24,6 +24,40 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+/* Override default background colors for better contrast */
+.bg-gray-50 {
+  @apply bg-slate-800;
+}
+
+.bg-white {
+  @apply bg-slate-700;
+}
+
+.text-gray-900 {
+  @apply text-white;
+}
+
+.text-gray-700 {
+  @apply text-gray-200;
+}
+
+.text-gray-600 {
+  @apply text-gray-300;
+}
+
+.text-gray-500 {
+  @apply text-gray-400;
+}
+
+.border-gray-200 {
+  @apply border-slate-600;
+}
+
+.border-gray-300 {
+  @apply border-slate-500;
 }
 
 .container {

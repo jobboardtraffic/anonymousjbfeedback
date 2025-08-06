@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import CompanyCard from '../components/CompanyCard';
 import SearchFilters from '../components/SearchFilters';
+import { useAuth } from '../layout';
 
 interface Company {
   id: string;
@@ -86,6 +87,7 @@ const MOCK_COMPANIES: Company[] = [
 ];
 
 export default function DirectoryPage() {
+  const { isAuthenticated, isAuthorized } = useAuth();
   const [companies, setCompanies] = useState<Company[]>(MOCK_COMPANIES);
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>(MOCK_COMPANIES);
   const [searchTerm, setSearchTerm] = useState('');
@@ -122,22 +124,36 @@ export default function DirectoryPage() {
   }, [companies, searchTerm, selectedType, minRating, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-800">
       {/* Header */}
-      <div className="bg-white shadow-sm">
+      <div className="bg-slate-900 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Company Directory</h1>
-            <p className="mt-2 text-lg text-gray-600">
+            <h1 className="text-3xl font-bold text-white">Company Directory</h1>
+            <p className="mt-2 text-lg text-gray-300">
               Browse and review job boards and traffic buyers
             </p>
+            {!isAuthenticated && (
+              <div className="mt-4 p-4 bg-yellow-900 border border-yellow-700 rounded-lg">
+                <p className="text-yellow-200 text-sm">
+                  ⚠️ Please log in to view detailed company ratings and scores
+                </p>
+              </div>
+            )}
+            {isAuthenticated && !isAuthorized && (
+              <div className="mt-4 p-4 bg-orange-900 border border-orange-700 rounded-lg">
+                <p className="text-orange-200 text-sm">
+                  ⚠️ Your account needs verification to view detailed company ratings
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div className="bg-slate-700 rounded-lg shadow-sm p-6 mb-8 border border-slate-600">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1">
@@ -148,7 +164,7 @@ export default function DirectoryPage() {
                   placeholder="Search companies..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                 />
               </div>
             </div>
@@ -156,7 +172,7 @@ export default function DirectoryPage() {
             {/* Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 border border-slate-500 rounded-lg hover:bg-slate-600 text-white"
             >
               <FunnelIcon className="h-5 w-5" />
               Filters
@@ -178,7 +194,7 @@ export default function DirectoryPage() {
 
         {/* Results Summary */}
         <div className="mb-6">
-          <p className="text-gray-600">
+          <p className="text-gray-300">
             Showing {filteredCompanies.length} of {companies.length} companies
           </p>
         </div>
@@ -186,21 +202,25 @@ export default function DirectoryPage() {
         {/* Company Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCompanies.map((company) => (
-            <CompanyCard key={company.id} company={company} />
+            <CompanyCard 
+              key={company.id} 
+              company={company} 
+              showDetailedScores={isAuthorized}
+            />
           ))}
         </div>
 
         {/* No Results */}
         {filteredCompanies.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No companies match your search criteria.</p>
+            <p className="text-gray-400 text-lg">No companies match your search criteria.</p>
             <button
               onClick={() => {
                 setSearchTerm('');
                 setSelectedType('all');
                 setMinRating(0);
               }}
-              className="mt-4 text-blue-600 hover:text-blue-800"
+              className="mt-4 text-blue-400 hover:text-blue-300"
             >
               Clear all filters
             </button>
