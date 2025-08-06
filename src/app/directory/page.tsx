@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import CompanyCard from '../components/CompanyCard';
 import SearchFilters from '../components/SearchFilters';
-import { useAuth } from '../layout';
+import { useAuth } from '../components/ClientLayout';
 
 interface Company {
   id: string;
